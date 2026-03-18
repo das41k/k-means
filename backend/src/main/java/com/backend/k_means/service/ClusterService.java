@@ -3,6 +3,7 @@ package com.backend.k_means.service;
 import com.backend.k_means.dto.ClusterRequest;
 import com.backend.k_means.dto.ClusterResponse;
 import com.backend.k_means.exception.DatasetNotFoundException;
+import com.backend.k_means.exception.InvalidColumnForCluster;
 import com.backend.k_means.model.Dataset;
 import com.backend.k_means.model.Point;
 import com.backend.k_means.repository.DatasetRepository;
@@ -82,7 +83,7 @@ public class ClusterService {
 
     private void validateNotNull(Object value, String column, int rowIndex) {
         if (value == null) {
-            throw new IllegalArgumentException(
+            throw new InvalidColumnForCluster(
                     String.format("Строка %d, колонка '%s': значение null", rowIndex + 1, column)
             );
         }
@@ -90,7 +91,7 @@ public class ClusterService {
 
     private void validateIsNumber(Object value, String column, int rowIndex) {
         if (!(value instanceof Number)) {
-            throw new IllegalArgumentException(
+            throw new InvalidColumnForCluster(
                     String.format("Строка %d, колонка '%s': нечисловое значение '%s'",
                             rowIndex + 1, column, value)
             );
