@@ -11,7 +11,11 @@ import java.util.List;
 
 public class PersonDetails implements UserDetails {
 
-    private Person person;
+    private final Person person;
+
+    public PersonDetails(Person person) {
+        this.person = person;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
