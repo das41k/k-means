@@ -39,4 +39,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    @ExceptionHandler(InvalidColumnForCluster.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidColumnForCluster(InvalidColumnForCluster e) {
+        log.error("Ошибка кластеризации: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Invalid Column for cluster");
+        response.put("message", e.getMessage());
+
+        return ResponseEntity.badRequest().body(response);
+    }
 }
