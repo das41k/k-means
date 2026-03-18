@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/cluster")
+@RequestMapping("/api/clusters")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3333")
 public class ClusterController {

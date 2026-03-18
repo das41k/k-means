@@ -28,3 +28,7 @@ spring.jpa.properties.hibernate.type_wrapper=io.hypersistence.utils.hibernate.ty
 logging.level.org.hibernate.SQL=DEBUG
 logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
 logging.level.org.springframework.web=DEBUG
+
+# JWT ПОЛУЧИТЬ У МЕНЯ
+jwtSecret=
+jwtExpirationMs=86400000
