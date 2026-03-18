@@ -1,0 +1,30 @@
+# Создай ФАЙЛ application.properties в этой же директории!
+# Дополни нужные зависимости!!!
+
+spring.application.name=k-means
+
+#Server
+server.port=4444
+server.servlet.context-path=/k-means
+
+#Data Source  ДОПОЛНИТЬ
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://localhost:5432/      # ДОПОЛНИТЬ НАЗВАНИЕ БД!!
+spring.datasource.username=  # ИМЯ ПОЛЬЗОВАТЕЛЯ!!!
+spring.datasource.password=  # ПАРОЛЬ!!
+
+#Hibernate
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+
+#JSONB support
+spring.jpa.properties.hibernate.type=jsonb
+spring.jpa.properties.hibernate.type_wrapper=io.hypersistence.utils.hibernate.type.json.JsonBinaryType
+
+#Logging
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+logging.level.org.springframework.web=DEBUG
