@@ -59,12 +59,6 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <!-- Hypersistence Utils - для работы с JSONB (ключевая зависимость!) -->
-        <dependency>
-            <groupId>io.hypersistence</groupId>
-            <artifactId>hypersistence-utils-hibernate-60</artifactId>
-            <version>3.7.0</version>
-        </dependency>
 	</dependencies>
 
 	<build>
