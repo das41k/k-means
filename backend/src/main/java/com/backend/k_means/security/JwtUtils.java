@@ -1,5 +1,6 @@
 package com.backend.k_means.security;
 
+import com.backend.k_means.exception.JwtAuthenticationException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -58,6 +59,5 @@ public class JwtUtils {
         } catch (IllegalArgumentException e) {
             throw new JwtAuthenticationException("JWT токен пуст или отсутствует");
         }
-        return false;
     }
 }
