@@ -18,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    private final PersonDetailsService personDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -27,22 +26,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/k-means/api/datasets/**").permitAll()
-                        .requestMatchers("/k-means/api/clusters").permitAll()
-                        .requestMatchers("/k-means/api/auth/**").permitAll()
+                        .requestMatchers("/api/datasets/**").permitAll()
+                        .requestMatchers("/api/clusters").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/k-means/api/auth/logout")
-                        .logoutSuccessUrl("/k-means/api/auth/datasets")
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .userDetailsService(personDetailsService)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
