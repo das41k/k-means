@@ -37,7 +37,7 @@ public class JwtUtils {
         return Jwts.parserBuilder()
                 .setSigningKey(key())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
@@ -45,6 +45,7 @@ public class JwtUtils {
     public boolean isValidJwtToken(String token) {
         try {
             Jwts.parserBuilder()
+                    .setSigningKey(key())
                     .build()
                     .parseClaimsJws(token);
             return true;
