@@ -74,4 +74,15 @@ public class GlobalExceptionHandler {
         response.put("message", e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException e) {
+        log.error("Пользователь не был найден: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "User is not found");
+        response.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
 }
