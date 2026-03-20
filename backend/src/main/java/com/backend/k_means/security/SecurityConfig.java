@@ -68,6 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/api/datasets/**").permitAll()
                         .requestMatchers("/api/clusters").permitAll()
+                        .requestMatchers("/api/clusters/save").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
