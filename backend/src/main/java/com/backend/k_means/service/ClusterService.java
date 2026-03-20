@@ -2,15 +2,21 @@ package com.backend.k_means.service;
 
 import com.backend.k_means.dto.ClusterRequest;
 import com.backend.k_means.dto.ClusterResult;
+import com.backend.k_means.dto.ClusterStats;
+import com.backend.k_means.exception.ClusterNotValidException;
 import com.backend.k_means.exception.DatasetNotFoundException;
 import com.backend.k_means.exception.InvalidColumnForCluster;
 import com.backend.k_means.model.Dataset;
+import com.backend.k_means.model.Person;
 import com.backend.k_means.model.Point;
+import com.backend.k_means.model.SavedCluster;
 import com.backend.k_means.repository.DatasetRepository;
+import com.backend.k_means.repository.SavedClusterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,6 +27,8 @@ public class ClusterService {
 
     private final DatasetRepository datasetRepository;
     private final KMeansService kMeansService;
+    private final SavedClusterRepository savedClusterRepository;
+    private final CurrentUserService currentUserService;
 
     public ClusterResult performClustering(ClusterRequest request) {
         log.info("Кластеризация датасета ID: {}, колонки: {}, k={}",
@@ -104,10 +112,11 @@ public class ClusterService {
             KMeansService.KMeansResult result) {
 
         List<Map<String, Object>> clusteredData = enrichDataWithClusters(rawData, result.getPoints());
-        List<ClusterResult.ClusterStats> stats = calculateStatistics(result.getPoints(), rawData, request.getColumns());
+        List<ClusterStats> stats = calculateStatistics(result.getPoints(), rawData, request.getColumns());
 
         return new ClusterResult(
                 request.getDatasetId(),
+                null,
                 request.getCountK(),
                 request.getColumns(),
                 result.getFinalCentroids(),
@@ -136,16 +145,16 @@ public class ClusterService {
         return enrichedRow;
     }
 
-    private List<ClusterResult.ClusterStats> calculateStatistics(
+    private List<ClusterStats> calculateStatistics(
             List<Point> points,
             List<Map<String, Object>> rawData,
             List<String> columns) {
 
         Map<Integer, List<Point>> pointsByCluster = groupPointsByCluster(points);
-        List<ClusterResult.ClusterStats> stats = new ArrayList<>();
+        List<ClusterStats> stats = new ArrayList<>();
 
         for (Map.Entry<Integer, List<Point>> entry : pointsByCluster.entrySet()) {
-            ClusterResult.ClusterStats clusterStat = calculateClusterStat(entry, rawData, columns);
+            ClusterStats clusterStat = calculateClusterStat(entry, rawData, columns);
             stats.add(clusterStat);
         }
 
@@ -157,7 +166,7 @@ public class ClusterService {
                 .collect(Collectors.groupingBy(Point::getClusterId));
     }
 
-    private ClusterResult.ClusterStats calculateClusterStat(
+    private ClusterStats calculateClusterStat(
             Map.Entry<Integer, List<Point>> entry,
             List<Map<String, Object>> rawData,
             List<String> columns) {
@@ -208,7 +217,7 @@ public class ClusterService {
                 .summaryStatistics();
     }
 
-    private ClusterResult.ClusterStats buildClusterStat(
+    private ClusterStats buildClusterStat(
             Integer clusterId,
             int size,
             Map<String, DoubleSummaryStatistics> columnStats,
@@ -218,7 +227,7 @@ public class ClusterService {
         Map<String, Double> mins = extractMins(columnStats, columns);
         Map<String, Double> maxs = extractMaxs(columnStats, columns);
 
-        return new ClusterResult.ClusterStats(clusterId, size, means, mins, maxs);
+        return new ClusterStats(clusterId, size, means, mins, maxs);
     }
 
     private Map<String, Double> extractMeans(
@@ -252,5 +261,33 @@ public class ClusterService {
             maxs.put(column, columnStats.get(column).getMax());
         }
         return maxs;
+    }
+
+    public void saveCluster(ClusterResult result) {
+        if (result.getName() == null || result.getName().trim().isEmpty()) {
+            throw new ClusterNotValidException("Не было указано имя кластера!");
+        }
+        Dataset dataset = datasetRepository.findById(result.getDatasetId())
+                .orElseThrow(() -> new DatasetNotFoundException(result.getDatasetId()));
+        Person currentUser = currentUserService.getCurrentUser();
+        SavedCluster cluster = mappingForSavedCluster(result);
+        cluster.setDataset(dataset);
+        cluster.setPerson(currentUser);
+
+        savedClusterRepository.save(cluster);
+        log.info("Кластер '{}' сохранен пользователем '{}'", cluster.getName(), currentUser.getUsername());
+        savedClusterRepository.save(cluster);
+    }
+
+    private SavedCluster mappingForSavedCluster(ClusterResult result) {
+        SavedCluster savedCluster = new SavedCluster();
+        savedCluster.setName(result.getName());
+        savedCluster.setK(result.getK());
+        savedCluster.setColumns(result.getColumns());
+        savedCluster.setFinalCentroids(result.getFinalCentroids());
+        savedCluster.setClusteredData(result.getClusteredData());
+        savedCluster.setCreatedAt(LocalDateTime.now());
+        savedCluster.setClusterStats(result.getClusterStats());
+        return savedCluster;
     }
 }

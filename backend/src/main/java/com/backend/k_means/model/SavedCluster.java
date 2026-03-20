@@ -1,5 +1,6 @@
 package com.backend.k_means.model;
 
+import com.backend.k_means.dto.ClusterStats;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,10 @@ public class SavedCluster {
     @JoinColumn(name = "dataset_id", nullable = false)
     private Dataset dataset;
 
+    @ManyToOne
+    @JoinColumn(name = "person_id", nullable = false)
+    private Person person;
+
     @Column(name = "count_k", nullable = false)
     private Integer k;
 
@@ -50,12 +55,4 @@ public class SavedCluster {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Data
-    public static class ClusterStats {
-        private Integer clusterId;
-        private Integer count;
-        private Map<String, Double> means;
-        private Map<String, Double> mins;
-        private Map<String, Double> maxs;
-    }
 }

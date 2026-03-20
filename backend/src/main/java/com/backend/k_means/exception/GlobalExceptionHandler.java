@@ -63,4 +63,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+
+    @ExceptionHandler(ClusterNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleClusterNotValid(ClusterNotValidException e) {
+        log.error("Ошибка валидации кластера: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp",LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Cluster in not valid");
+        response.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
 }
