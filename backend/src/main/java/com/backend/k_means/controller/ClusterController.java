@@ -33,6 +33,13 @@ public class ClusterController {
         log.info("POST /cluster/save - datasetId: {}, columns: {}, k= {}",
                 request.getDatasetId(), request.getColumns(), request.getK());
         clusterService.saveCluster(request);
-        return ResponseEntity.ok("Кластер был успешно сохранен");
+        return ResponseEntity.ok("Кластеризация была успешно сохранена");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCluster(@PathVariable Long id) {
+        log.info("DELETE /cluster/{}", id);
+        clusterService.deleteClusterForCurrentUser(id);
+        return ResponseEntity.ok("Кластеризация была успешно удалена!");
     }
 }

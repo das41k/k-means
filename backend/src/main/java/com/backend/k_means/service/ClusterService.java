@@ -3,9 +3,7 @@ package com.backend.k_means.service;
 import com.backend.k_means.dto.ClusterRequest;
 import com.backend.k_means.dto.ClusterResult;
 import com.backend.k_means.dto.ClusterStats;
-import com.backend.k_means.exception.ClusterNotValidException;
-import com.backend.k_means.exception.DatasetNotFoundException;
-import com.backend.k_means.exception.InvalidColumnForCluster;
+import com.backend.k_means.exception.*;
 import com.backend.k_means.model.Dataset;
 import com.backend.k_means.model.Person;
 import com.backend.k_means.model.Point;
@@ -289,5 +287,16 @@ public class ClusterService {
         savedCluster.setCreatedAt(LocalDateTime.now());
         savedCluster.setClusterStats(result.getClusterStats());
         return savedCluster;
+    }
+
+    public void deleteClusterForCurrentUser(Long clusterId) {
+        SavedCluster cluster = savedClusterRepository.findById(clusterId)
+                .orElseThrow(() -> new ClusterNotFoundException("Данная кластеризация не была найдена в системе!"));
+        Person userCluster = cluster.getPerson();
+        Person currentUser =  currentUserService.getCurrentUser();
+        if (!Objects.equals(userCluster.getId(), currentUser.getId())) {
+            throw new ClusterIsNotHaveUserException("Кластеризация принадлежит другому пользователю");
+        }
+        savedClusterRepository.delete(cluster);
     }
 }
