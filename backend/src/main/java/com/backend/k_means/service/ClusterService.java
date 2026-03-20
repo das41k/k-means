@@ -28,7 +28,7 @@ public class ClusterService {
     private final DatasetRepository datasetRepository;
     private final KMeansService kMeansService;
     private final SavedClusterRepository savedClusterRepository;
-    private final CurrentUserService currentUserService;
+    private final UserService currentUserService;
 
     public ClusterResult performClustering(ClusterRequest request) {
         log.info("Кластеризация датасета ID: {}, колонки: {}, k={}",

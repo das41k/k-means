@@ -3,6 +3,8 @@ package com.backend.k_means.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "peoples")
 @Data
@@ -17,4 +19,7 @@ public class Person {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
+    private List<SavedCluster> savedClusters;
 }
