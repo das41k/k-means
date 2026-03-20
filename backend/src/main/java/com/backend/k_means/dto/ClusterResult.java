@@ -12,6 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class ClusterResult {
     private Long datasetId;
+    private String name;
     private Integer k;
     private List<String> columns;
 
@@ -23,15 +24,4 @@ public class ClusterResult {
 
     // Статистика по кластерам
     private List<ClusterStats> clusterStats;
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ClusterStats {
-        private Integer clusterId;
-        private Integer count;  // количество точек
-        private Map<String, Double> means;  // средние значения по колонкам
-        private Map<String, Double> mins;
-        private Map<String, Double> maxs;
-    }
 }
