@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClusterResponse {
+public class ClusterResult {
     private Long datasetId;
     private Integer k;
     private List<String> columns;
@@ -19,7 +19,7 @@ public class ClusterResponse {
     private List<List<Double>> finalCentroids;
 
     // Для каждой строки - какой кластер
-    private List<Map<String, Object>> clusteredData;  // исходные данные + clusterId
+    private List<Map<String, Object>> clusteredData;
 
     // Статистика по кластерам
     private List<ClusterStats> clusterStats;

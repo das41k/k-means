@@ -1,7 +1,7 @@
 package com.backend.k_means.service;
 
 import com.backend.k_means.dto.ClusterRequest;
-import com.backend.k_means.dto.ClusterResponse;
+import com.backend.k_means.dto.ClusterResult;
 import com.backend.k_means.exception.DatasetNotFoundException;
 import com.backend.k_means.exception.InvalidColumnForCluster;
 import com.backend.k_means.model.Dataset;
@@ -22,7 +22,7 @@ public class ClusterService {
     private final DatasetRepository datasetRepository;
     private final KMeansService kMeansService;
 
-    public ClusterResponse performClustering(ClusterRequest request) {
+    public ClusterResult performClustering(ClusterRequest request) {
         log.info("Кластеризация датасета ID: {}, колонки: {}, k={}",
                 request.getDatasetId(), request.getColumns(), request.getCountK());
 
@@ -98,15 +98,15 @@ public class ClusterService {
         }
     }
 
-    private ClusterResponse buildClusterResponse(
+    private ClusterResult buildClusterResponse(
             ClusterRequest request,
             List<Map<String, Object>> rawData,
             KMeansService.KMeansResult result) {
 
         List<Map<String, Object>> clusteredData = enrichDataWithClusters(rawData, result.getPoints());
-        List<ClusterResponse.ClusterStats> stats = calculateStatistics(result.getPoints(), rawData, request.getColumns());
+        List<ClusterResult.ClusterStats> stats = calculateStatistics(result.getPoints(), rawData, request.getColumns());
 
-        return new ClusterResponse(
+        return new ClusterResult(
                 request.getDatasetId(),
                 request.getCountK(),
                 request.getColumns(),
@@ -136,16 +136,16 @@ public class ClusterService {
         return enrichedRow;
     }
 
-    private List<ClusterResponse.ClusterStats> calculateStatistics(
+    private List<ClusterResult.ClusterStats> calculateStatistics(
             List<Point> points,
             List<Map<String, Object>> rawData,
             List<String> columns) {
 
         Map<Integer, List<Point>> pointsByCluster = groupPointsByCluster(points);
-        List<ClusterResponse.ClusterStats> stats = new ArrayList<>();
+        List<ClusterResult.ClusterStats> stats = new ArrayList<>();
 
         for (Map.Entry<Integer, List<Point>> entry : pointsByCluster.entrySet()) {
-            ClusterResponse.ClusterStats clusterStat = calculateClusterStat(entry, rawData, columns);
+            ClusterResult.ClusterStats clusterStat = calculateClusterStat(entry, rawData, columns);
             stats.add(clusterStat);
         }
 
@@ -157,7 +157,7 @@ public class ClusterService {
                 .collect(Collectors.groupingBy(Point::getClusterId));
     }
 
-    private ClusterResponse.ClusterStats calculateClusterStat(
+    private ClusterResult.ClusterStats calculateClusterStat(
             Map.Entry<Integer, List<Point>> entry,
             List<Map<String, Object>> rawData,
             List<String> columns) {
@@ -208,7 +208,7 @@ public class ClusterService {
                 .summaryStatistics();
     }
 
-    private ClusterResponse.ClusterStats buildClusterStat(
+    private ClusterResult.ClusterStats buildClusterStat(
             Integer clusterId,
             int size,
             Map<String, DoubleSummaryStatistics> columnStats,
@@ -218,7 +218,7 @@ public class ClusterService {
         Map<String, Double> mins = extractMins(columnStats, columns);
         Map<String, Double> maxs = extractMaxs(columnStats, columns);
 
-        return new ClusterResponse.ClusterStats(clusterId, size, means, mins, maxs);
+        return new ClusterResult.ClusterStats(clusterId, size, means, mins, maxs);
     }
 
     private Map<String, Double> extractMeans(

@@ -1,7 +1,7 @@
 package com.backend.k_means.controller;
 
 import com.backend.k_means.dto.ClusterRequest;
-import com.backend.k_means.dto.ClusterResponse;
+import com.backend.k_means.dto.ClusterResult;
 import com.backend.k_means.service.ClusterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +18,11 @@ public class ClusterController {
     private final ClusterService clusterService;
 
     @PostMapping
-    public ResponseEntity<ClusterResponse> cluster(@RequestBody ClusterRequest request) {
+    public ResponseEntity<ClusterResult> cluster(@RequestBody ClusterRequest request) {
         log.info("POST /cluster - datasetId: {}, columns: {}, k={}",
                 request.getDatasetId(), request.getColumns(), request.getCountK());
 
-        ClusterResponse response = clusterService.performClustering(request);
+        ClusterResult response = clusterService.performClustering(request);
 
         return ResponseEntity.ok(response);
     }
