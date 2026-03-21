@@ -20,7 +20,7 @@ public class ClusterController {
 
     @PostMapping
     public ResponseEntity<ClusterResult> clusterization(@RequestBody ClusterRequest request) {
-        log.info("POST /cluster - datasetId: {}, columns: {}, k={}",
+        log.info("POST /clusters - datasetId: {}, columns: {}, k={}",
                 request.getDatasetId(), request.getColumns(), request.getCountK());
 
         ClusterResult response = clusterService.performClustering(request);
@@ -30,7 +30,7 @@ public class ClusterController {
 
     @PostMapping("/save")
     public ResponseEntity<?> savedCluster(@RequestBody ClusterResult request) {
-        log.info("POST /cluster/save - datasetId: {}, columns: {}, k= {}",
+        log.info("POST /clusters/save - datasetId: {}, columns: {}, k= {}",
                 request.getDatasetId(), request.getColumns(), request.getK());
         clusterService.saveCluster(request);
         return ResponseEntity.ok("Кластеризация была успешно сохранена");
@@ -38,8 +38,15 @@ public class ClusterController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCluster(@PathVariable Long id) {
-        log.info("DELETE /cluster/{}", id);
+        log.info("DELETE /clusters/{}", id);
         clusterService.deleteClusterForCurrentUser(id);
         return ResponseEntity.ok("Кластеризация была успешно удалена!");
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClusterResult> getClusterizationById(@PathVariable Long id) {
+        log.info("GET /clusters/{}", id);
+        ClusterResult response = clusterService.getClusterInfo(id);
+        return ResponseEntity.ok(response);
     }
 }

@@ -289,6 +289,18 @@ public class ClusterService {
         return savedCluster;
     }
 
+    private ClusterResult mappingForClusterResult(SavedCluster cluster) {
+        ClusterResult clusterResult = new ClusterResult();
+        clusterResult.setDatasetId(cluster.getDataset().getId());
+        clusterResult.setName(cluster.getName());
+        clusterResult.setK(cluster.getK());
+        clusterResult.setColumns(cluster.getColumns());
+        clusterResult.setFinalCentroids(cluster.getFinalCentroids());
+        clusterResult.setClusteredData(cluster.getClusteredData());
+        clusterResult.setClusterStats(cluster.getClusterStats());
+        return clusterResult;
+    }
+
     public void deleteClusterForCurrentUser(Long clusterId) {
         SavedCluster cluster = savedClusterRepository.findById(clusterId)
                 .orElseThrow(() -> new ClusterNotFoundException("Данная кластеризация не была найдена в системе!"));
@@ -299,4 +311,11 @@ public class ClusterService {
         }
         savedClusterRepository.delete(cluster);
     }
+
+    public ClusterResult getClusterInfo(Long clusterId) {
+        SavedCluster cluster = savedClusterRepository.findById(clusterId)
+                .orElseThrow(() -> new ClusterNotFoundException("Кластеризация не была найдена в системе!"));
+        return mappingForClusterResult(cluster);
+    }
+
 }
