@@ -51,4 +51,60 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(JwtAuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleJwtAuth(JwtAuthenticationException e) {
+        log.error("JWT ошибка: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("error", "Unauthorized");
+        response.put("message", e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(ClusterNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleClusterNotValid(ClusterNotValidException e) {
+        log.error("Ошибка валидации кластера: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp",LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Cluster in not valid");
+        response.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException e) {
+        log.error("Пользователь не был найден: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "User is not found");
+        response.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(ClusterNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleClusterNotFound(ClusterNotFoundException e) {
+        log.error("Кластеризация не была найдена: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "User is not found");
+        response.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(ClusterIsNotHaveUserException.class)
+    public ResponseEntity<Map<String, Object>> handleClusterIsNotHaveUser(ClusterIsNotHaveUserException e) {
+        log.error("Кластеризация не была найдена: {}", e.getMessage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("error", "clustering belongs to another user");
+        response.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
 }
