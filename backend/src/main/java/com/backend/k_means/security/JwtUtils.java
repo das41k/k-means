@@ -30,7 +30,32 @@ public class JwtUtils {
     }
 
     private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        byte[] keyBytes;
+
+        // Проверяем, это BASE64 или обычная строка
+        if (jwtSecret.matches("^[A-Za-z0-9+/=]+$") && jwtSecret.length() % 4 == 0) {
+            // Пробуем декодировать как BASE64
+            try {
+                keyBytes = Decoders.BASE64.decode(jwtSecret);
+            } catch (Exception e) {
+                // Если не получилось, используем как строку
+                keyBytes = jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            }
+        } else {
+            keyBytes = jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        }
+
+        // Если ключ меньше 32 байт — дополняем
+        if (keyBytes.length < 32) {
+            byte[] paddedKey = new byte[32];
+            System.arraycopy(keyBytes, 0, paddedKey, 0, keyBytes.length);
+            for (int i = keyBytes.length; i < 32; i++) {
+                paddedKey[i] = 0x00;
+            }
+            keyBytes = paddedKey;
+        }
+
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String getUserNameFromJwtToken(String token) {
