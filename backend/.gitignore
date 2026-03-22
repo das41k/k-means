@@ -31,3 +31,8 @@ build/
 
 
 src/main/resources/application.properties
+
+# Secrets
+.env
+*.env
+!*.env.example
