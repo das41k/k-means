@@ -1,6 +1,50 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FiUser, FiLock, FiUserPlus, FiCheck } from 'react-icons/fi';
+import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
+import Input from '../common/Input';
+import Button from '../common/Button';
+import Card from '../common/Card';
+
+const Container = styled.div`
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+`;
+
+const Title = styled.h2`
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: ${({ theme }) => theme.colors.primary.gradient};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+`;
+
+const Subtitle = styled.p`
+    text-align: center;
+    color: ${({ theme }) => theme.colors.text.secondary};
+    margin-bottom: 32px;
+    font-size: 14px;
+`;
+
+const LinkWrapper = styled.div`
+    text-align: center;
+    margin-top: 24px;
+    font-size: 14px;
+    color: ${({ theme }) => theme.colors.text.secondary};
+
+    a {
+        font-weight: 600;
+    }
+`;
 
 const Register: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -20,6 +64,11 @@ const Register: React.FC = () => {
             return;
         }
 
+        if (password.length < 4) {
+            setError('Пароль должен содержать минимум 4 символа');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -33,102 +82,85 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <h2>Регистрация</h2>
-                {error && <div style={styles.error}>{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div style={styles.inputGroup}>
-                        <label>Логин</label>
-                        <input
+        <Container>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                style={{ width: '100%', maxWidth: '460px' }}
+            >
+                <Card>
+                    <Title>Создать аккаунт</Title>
+                    <Subtitle>Присоединяйтесь к нам</Subtitle>
+
+                    <form onSubmit={handleSubmit}>
+                        <Input
+                            label="Логин"
                             type="text"
+                            placeholder="Придумайте логин"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            icon={<FiUser size={20} />}
                             required
-                            style={styles.input}
                         />
-                    </div>
-                    <div style={styles.inputGroup}>
-                        <label>Пароль</label>
-                        <input
+
+                        <Input
+                            label="Пароль"
                             type="password"
+                            placeholder="Придумайте пароль"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            icon={<FiLock size={20} />}
                             required
-                            style={styles.input}
                         />
-                    </div>
-                    <div style={styles.inputGroup}>
-                        <label>Подтвердите пароль</label>
-                        <input
+
+                        <Input
+                            label="Подтвердите пароль"
                             type="password"
+                            placeholder="Повторите пароль"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            icon={<FiCheck size={20} />}
                             required
-                            style={styles.input}
+                            error={confirmPassword && password !== confirmPassword ? 'Пароли не совпадают' : undefined}
                         />
-                    </div>
-                    <button type="submit" disabled={loading} style={styles.button}>
-                        {loading ? 'Регистрация...' : 'Зарегистрироваться'}
-                    </button>
-                </form>
-                <p style={styles.link}>
-                    Уже есть аккаунт? <Link to="/login">Войти</Link>
-                </p>
-            </div>
-        </div>
-    );
-};
 
-const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#f0f2f5',
-    },
-    card: {
-        backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        width: '100%',
-        maxWidth: '400px',
-    },
-    inputGroup: {
-        marginBottom: '1rem',
-    },
-    input: {
-        width: '100%',
-        padding: '0.5rem',
-        marginTop: '0.25rem',
-        border: '1px solid #ddd',
-        borderRadius: '4px',
-        fontSize: '1rem',
-    },
-    button: {
-        width: '100%',
-        padding: '0.75rem',
-        backgroundColor: '#52c41a',
-        color: 'white',
-        border: 'none',
-        borderRadius: '4px',
-        fontSize: '1rem',
-        cursor: 'pointer',
-    },
-    error: {
-        backgroundColor: '#ff4d4f',
-        color: 'white',
-        padding: '0.5rem',
-        borderRadius: '4px',
-        marginBottom: '1rem',
-        textAlign: 'center',
-    },
-    link: {
-        marginTop: '1rem',
-        textAlign: 'center',
-    },
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                style={{
+                                    padding: '12px',
+                                    background: '#fee2e2',
+                                    borderRadius: '8px',
+                                    marginBottom: '20px',
+                                    color: '#dc2626',
+                                    fontSize: '14px',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                {error}
+                            </motion.div>
+                        )}
+
+                        <Button
+                            type="submit"
+                            fullWidth
+                            isLoading={loading}
+                            variant="primary"
+                        >
+                            <FiUserPlus style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            Зарегистрироваться
+                        </Button>
+                    </form>
+
+                    <LinkWrapper>
+                        Уже есть аккаунт? <Link to="/login">Войти</Link>
+                    </LinkWrapper>
+                </Card>
+            </motion.div>
+        </Container>
+    );
 };
 
 export default Register;
