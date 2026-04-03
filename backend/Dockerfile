@@ -1,19 +1,19 @@
-# Используем официальный образ Java 21 от Eclipse Temurin
-FROM eclipse-temurin:21-jdk-alpine
-
-# Устанавливаем рабочую директорию
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
-# Копируем jar файл после сборки
-COPY target/k-means-0.0.1-SNAPSHOT.jar app.jar
+COPY pom.xml .
+COPY src ./src
 
-# Создаем пользователя для безопасности
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
 USER appuser
 
-# Открываем порт
 EXPOSE 4444
 
-# Запускаем
 ENTRYPOINT ["java", "-jar", "app.jar"]
